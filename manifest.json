@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "FetLife Bot (фикс от Хербала 🌿) | t.me/look_im_model",
   "description": "Трафик с FetLife",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "icons": {
     "16": "assets/16.png",
     "48": "assets/48.png",

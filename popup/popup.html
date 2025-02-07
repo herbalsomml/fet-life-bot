@@ -23,6 +23,7 @@
         <img src="../assets/logo.png" style="width: 250px" alt="logo" />
       </a>
     </h1>
+    <div id="notification"></div>
     <div
       id="dashboard"
       style="display: none; justify-content: center; gap: 20px"
@@ -123,16 +124,16 @@
         <div class="container">
           <input
             type="text"
-            id="photoURL"
+            id="contentUrl"
             style="background-color: #444444"
-            placeholder="Ссылка на фото..."
+            placeholder="Ссылка на контент..."
           />
           <button id="collectUsers">Собрать юзеров</button>
 
           <h2>Обычных юзеров: <span id="normalUsers">0</span></h2>
 
           <button id="exportNormal" style="background-color: #575757">
-            Add to List
+            Добавить в список
           </button>
           <h2>VIP юзеров: <span id="vipUsers">0</span></h2>
 

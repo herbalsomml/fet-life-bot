@@ -19,15 +19,20 @@ if (window.location.href.includes("handlePost=true")) {
   handlePost();
 }
 
+if (window.location.href.startsWith("https://fetlife.com/users/") && !window.location.href.includes("activeTask=true")) {
+  chrome.storage.local.set({ 'currentUrl': window.location.href });
+  handleNext();
+}
+
 function handlePost() {
   chrome.storage.local.get(["links", "activeLike", "activeFollow"], function ({
-    links: _0xc1848a,
-    activeLike: _0x521aaa,
-    activeFollow: _0x39d922
+    links: links,
+    activeLike: activeLike,
+    activeFollow: activeFollow
   }) {
-    if (_0x521aaa) {
+    if (activeLike) {
       likeThePost();
-    } else if (_0x39d922) {
+    } else if (activeFollow) {
       followThePost();
     }
   });
@@ -35,44 +40,44 @@ function handlePost() {
 
 function likeThePost() {
   chrome.storage.local.get(["delayLike"], function ({
-    delayLike: _0x2c271e
+    delayLike: delayLike
   }) {
-    _0x2c271e = parseInt(_0x2c271e);
+    delayLike = parseInt(delayLike);
     setTimeout(() => {
-      const _0x1cfcab = document.querySelector("footer a");
-      if (!_0x1cfcab.title.includes("Loved")) {
-        _0x1cfcab.click();
+      const footer = document.querySelector("footer a");
+      if (!footer.title.includes("Loved")) {
+        footer.click();
       }
       updateLikeStatus();
       chrome.storage.local.get(["activeFollow"], function ({
-        activeFollow: _0x46bef2
+        activeFollow: activeFollow
       }) {
-        if (_0x46bef2) {
+        if (activeFollow) {
           followThePost();
         } else {
           handleNext();
         }
       });
-    }, _0x2c271e * 0x3e8);
+    }, delayLike * 0x3e8);
   });
 }
 
 function followThePost() {
   chrome.storage.local.get(["delayFollow"], function ({
-    delayFollow: _0x4670e9
+    delayFollow: delayFollow
   }) {
-    _0x4670e9 = parseInt(_0x4670e9);
+    delayFollow = parseInt(delayFollow);
     setTimeout(() => {
-      const _0x44292e = document.querySelector("main header button");
+      const headerButton = document.querySelector("main header button");
       updateFollowStatus();
-      if (!_0x44292e) {
+      if (!headerButton) {
         return handleNext();
       }
-      if (!_0x44292e.getAttribute("class").includes("bg-transparent")) {
-        _0x44292e.click();
+      if (!headerButton.getAttribute("class").includes("bg-transparent")) {
+        headerButton.click();
       }
       handleNext();
-    }, _0x4670e9 * 0x3e8);
+    }, delayFollow * 0x3e8);
   });
 }
 
@@ -87,19 +92,17 @@ function isFollowed(_0x52daf1, _0x369534) {
 }
 
 function handleNext() {
-  chrome.storage.local.get(['links', "delayNext", "activeLike", "activeFollow"], function ({
+  chrome.storage.local.get(['links', "delayNext", "activeLike", "activeFollow", "currentUrl"], function ({
     links: links,
     delayNext: delayNext,
     activeLike: activeLike,
-    activeFollow: activeFollow
+    activeFollow: activeFollow,
+    currentUrl: currentUrl
   }) {
     delayNext = parseInt(delayNext);
     setTimeout(() => {
-      const filteredUrls = filterUrls(links, activeLike, activeFollow);
+      const filteredUrls = filterUrls(links, activeLike, activeFollow, currentUrl);
       let nextUrl = filteredUrls[0x0];
-      console.log(links, filteredUrls);
-      console.log("Некст");
-      console.log(nextUrl);
       if (nextUrl) {
         chrome.storage.local.set({ 'currentUrl': nextUrl.url });
         window.location.replace(nextUrl.url + "/pictures?activeTask=true");
@@ -112,8 +115,7 @@ function handleNext() {
 
 
 if (window.location.href.startsWith("https://fetlife.com/") && window.location.href.includes("/pictures/") && !window.location.href.includes("handlePost=true") && !window.location.href.includes("activeTask=true") && window.location.href.length < 0x26) {
-//if (!window.location.href.includes("handlePost=true") && !window.location.href.includes("activeTask=true") && window.location.href.length < 0x26) {
-//if (window.location.href.startsWith("https://fetlife.com/users/") && !window.location.href.includes("handlePost=true") && !window.location.href.includes("activeTask=true") && window.location.href.length < 0x26) {
+  сonsole.log("Обработка поста");
   const list = document.querySelectorAll("li a");
   let noProfile = false;
   list.forEach(_0x577fec => {
@@ -122,10 +124,11 @@ if (window.location.href.startsWith("https://fetlife.com/") && window.location.h
     }
   });
   if (!noProfile) {
-    chrome.storage.local.get(["links", "activeLike", "activeFollow"], function ({
+    chrome.storage.local.get(["links", "activeLike", "activeFollow", "currentUrl"], function ({
       links: _0x115fe7,
       activeLike: _0x3f0d0d,
-      activeFollow: _0x6948d2
+      activeFollow: _0x6948d2,
+      currentUrl: currentUrl
     }) {
       let _0x2e34b6 = [];
       const _0x19750f = window.location.href;
@@ -137,7 +140,7 @@ if (window.location.href.startsWith("https://fetlife.com/") && window.location.h
       chrome.storage.local.set({
         'links': _0x2e34b6
       }, function () {
-        const _0x2a259f = filterUrls(_0x2e34b6, _0x3f0d0d, _0x6948d2);
+        const _0x2a259f = filterUrls(_0x2e34b6, _0x3f0d0d, _0x6948d2, currentUrl);
         const _0x3a4713 = _0x2a259f[0x0];
         if (_0x3a4713) {
           window.location.replace(_0x3a4713.url + "/pictures?activeTask=true");
@@ -178,7 +181,7 @@ function updateLikeStatus() {
 
 function updateFollowStatus() {
     chrome.storage.local.get(['currentUrl'], function (result) {
-    const currentUrl = result.currentUrl; // currentUrl из хранилища
+    const currentUrl = result.currentUrl;
 
     if (currentUrl) {
       chrome.storage.local.get(["links"], function ({ links }) {
@@ -252,20 +255,25 @@ function smoothScrollToBottom() {
   _0x14f1c4();
 }
 
-function filterUrls(links, activeLike, activeFollow) {
+function filterUrls(links, activeLike, activeFollow, currentUrl) {
   return links.filter(link => {
+    if (link.url === currentUrl) {
+      return false;
+    }
+
     if (activeFollow && activeLike) {
       return !link.like && !link.follow;
-    } else {
-      if (activeFollow) {
-        return !link.follow;
-      } else {
-        if (activeLike) {
-          return !link.like;
-        }
-      }
     }
-    return false;
+    
+    if (activeFollow) {
+      return !link.follow;
+    }
+    
+    if (activeLike) {
+      return !link.like;
+    }
+    
+    return true;
   });
 }
 
@@ -302,19 +310,19 @@ function handleCollectUsers() {
 }
 
 function handleDataCollection() {
-  const _0x3eebf6 = Math.floor(Math.random() * 7001) + 0x1388;
-  let _0x5cca5 = [];
-  const _0x453cb7 = document.querySelectorAll("aside a.link.block");
-  _0x453cb7.forEach(_0x491cc0 => {
-    _0x5cca5.push(_0x491cc0.href);
+  const randomDelay = Math.floor(Math.random() * 7001) + 0x1388;
+  let urls = [];
+  const links = document.querySelectorAll("aside a.link.block");
+  links.forEach(link => {
+    urls.push(link.href);
   });
-  const _0xfc88dc = _0x5cca5[userIndex];
-  if (!_0xfc88dc) {
+  const currentUser = urls[userIndex];
+  if (!currentUser) {
     return alert("Сбор пользователей завершен!");
   }
   userIndex++;
   document.getElementById("updateMessage").textContent = userIndex;
-  fetch(_0xfc88dc, {
+  fetch(currentUser, {
     'method': "GET",
     'headers': {
       'Accept': 'application/json',
@@ -334,17 +342,17 @@ function handleDataCollection() {
       const _0x169bf7 = _0x3291ef.core.showBadge;
       const _0x469108 = JSON.stringify(_0x3291ef?.["currentUserRelation"]?.['location']).includes("United States");
       const _0x14aad1 = _0x39e60e === "Male" || _0x39e60e === "Man" || _0x39e60e === "boy";
-      if (!_0x444b6c.includes(_0xfc88dc)) {
+      if (!_0x444b6c.includes(currentUser)) {
         if (_0x14aad1) {
           if (_0x169bf7) {
             _0x4bf552.push({
-              'username': _0xfc88dc,
+              'username': currentUser,
               'vip': true,
               'usa': _0x469108
             });
           } else {
             _0x4bf552.push({
-              'username': _0xfc88dc,
+              'username': currentUser,
               'vip': false,
               'usa': _0x469108
             });
@@ -352,18 +360,18 @@ function handleDataCollection() {
           chrome.storage.local.set({
             'collects': _0x4bf552
           }, function () {
-            console.log("New user collected", _0xfc88dc);
+            console.log("New user collected", currentUser);
           });
         }
       }
     });
     setTimeout(() => {
       handleDataCollection();
-    }, _0x3eebf6);
+    }, randomDelay);
   })["catch"](_0xd7a38a => {
     setTimeout(() => {
       handleDataCollection();
-    }, _0x3eebf6);
+    }, randomDelay);
   });
 }
 
@@ -371,25 +379,25 @@ function createOverlay() {
   if (document.querySelector('.custom-overlay')) {
     return;
   }
-  const _0x184430 = document.createElement('div');
-  _0x184430.classList.add("custom-overlay");
-  const _0x2d6926 = document.createElement("div");
-  _0x2d6926.classList.add("custom-box");
-  const _0x3baf31 = document.createElement('h2');
-  _0x3baf31.textContent = "FetLife Bot (фикс от Хербала 🌿) | t.me/look_im_model";
-  _0x3baf31.classList.add('box-title');
-  _0x2d6926.appendChild(_0x3baf31);
-  const _0x33fe32 = document.createElement('p');
-  _0x33fe32.textContent = "Сбор юзеров... Ожидайте!";
-  _0x33fe32.classList.add("box-content");
-  _0x2d6926.appendChild(_0x33fe32);
-  const _0x120315 = document.createElement("div");
+  const customOverlay = document.createElement('div');
+  customOverlay.classList.add("custom-overlay");
+  const customBox = document.createElement("div");
+  customBox.classList.add("custom-box");
+  const boxTitle = document.createElement('h2');
+  boxTitle.textContent = "FetLife Bot (фикс от Хербала 🌿) | t.me/look_im_model";
+  boxTitle.classList.add('box-title');
+  customBox.appendChild(boxTitle);
+  const boxContent = document.createElement('p');
+  boxContent.textContent = "Сбор юзеров... Ожидайте!";
+  boxContent.classList.add("box-content");
+  customBox.appendChild(boxContent);
+  const processText = document.createElement("div");
   chrome.storage.local.get(['quantity'], function ({
-    quantity: _0x4debe5
+    quantity: quantity
   }) {
-    _0x120315.innerHTML = "<p style='font-size:1.3rem'>Обработка... <span style=\" color: #00b894; font-weight: bold; \"><span id='updateMessage'>0</span></span></p>";
+    processText.innerHTML = "<p style='font-size:1.3rem'>Обработка... <span style=\" color: #00b894; font-weight: bold; \"><span id='updateMessage'>0</span></span></p>";
   });
-  _0x2d6926.appendChild(_0x120315);
-  _0x184430.appendChild(_0x2d6926);
-  document.body.appendChild(_0x184430);
+  customBox.appendChild(processText);
+  customOverlay.appendChild(customBox);
+  document.body.appendChild(customOverlay);
 }

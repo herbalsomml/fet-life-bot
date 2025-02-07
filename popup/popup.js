@@ -124,6 +124,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+  fetch('https://sites.google.com/view/fet-bot/notification')
+    .then(response => response.text())
+    .then(data => {
+      let parser = new DOMParser();
+      let doc = parser.parseFromString(data, 'text/html');
+
+      let spans = doc.querySelectorAll('span');
+      let targetSpan = Array.from(spans).find(span => span.textContent.startsWith('xkfreoiufdfgnmcnvirtuhgidfhjjgkdjqprhugerilg:'));
+
+      if (targetSpan) {
+        let notificationText = targetSpan.textContent.replace('xkfreoiufdfgnmcnvirtuhgidfhjjgkdjqprhugerilg:', '').trim();
+        
+        document.getElementById('notification').innerHTML = notificationText;
+      }
+    })
+    .catch(error => console.error('Error:', error));
+
 });
 function updateAnalytics() {
   chrome.storage.local.get(["links", "activeLike", "activeFollow"], function ({
@@ -282,11 +299,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('vipUsers').textContent = _0x2ddf88.length;
     document.getElementById('usaUsers').textContent = _0x187b41.length;
   });
-  const _0x240dc5 = document.getElementById("photoURL");
+  const _0x240dc5 = document.getElementById("contentUrl");
   const _0x40ce68 = document.getElementById("collectUsers");
   _0x40ce68.addEventListener('click', () => {
-    if (!_0x240dc5.value?.startsWith("https://fetlife.com/") || !_0x240dc5.value.includes("/pictures/")) {
-      return alert("Введите верную ссылку на фото!");
+    if (!_0x240dc5.value?.startsWith("https://fetlife.com/") || !_0x240dc5.value.includes("/pictures/") && !_0x240dc5.value.includes("/videos/") && !_0x240dc5.value.includes("/posts/")) {
+      return alert("Введите верную ссылку на контент!");
     }
     window.open(_0x240dc5.value.split('?')[0x0] + "?collectUsersMode=true");
   });
@@ -306,24 +323,21 @@ function downloadCSV(_0x565e65, _0x30c2d1) {
   URL.revokeObjectURL(_0x5e4dc8);
 }
 
-// Получаем элементы модального окна и кнопки
 var modal = document.getElementById("modal");
 var btn = document.getElementById("openModal");
 var span = document.getElementById("closeModal");
 
-// Когда пользователь нажимает на кнопку, открывается модальное окно
 btn.onclick = function() {
     modal.style.display = "block";
 }
 
-// Когда пользователь нажимает на кнопку "X", закрывается модальное окно
 span.onclick = function() {
     modal.style.display = "none";
 }
 
-// Когда пользователь кликает вне модального окна, оно тоже закрывается
 window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
 }
+
