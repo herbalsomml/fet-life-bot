@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>My Chrome Extension</title>
+  </head>
+  <body>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+          <span id="closeModal" class="close">&times;</span>
+          <h1>Крипто-адреса для донатиков</h1>
+          <b>USDT (TRC20): <span style="color: red;">TP8gzpnAMwDCe9KJnX9jJmaoWF8ErqpMom</span></b>
+          <p>USDT (ERC20): <span style="color: red;">0x8abf89f670386bf809d3c33fe65e4da0c0e086bf</span></p>
+          <p>BITCOIN (BTC): <span style="color: red;">1EPrzQXKWo7MH6qpHFkvzVD1uASHAYApLQ</span></p>
+          <p>ETH (ETH): <span style="color: red;">0x8abf89f670386bf809d3c33fe65e4da0c0e086bf</span></p>
+          <p>TON (TON): <span style="color: red;">UQA3O6a23ArDHhvTvTi7oDw3DIulkTk3yqxoQNyrwaTAH9Su</span></p>
+      </div>
+    </div>        
+    <h1 style="text-align: center; margin: 0">
+      <a href="https://t.me/look_im_model" target="_blank">
+        <img src="../assets/logo.png" style="width: 250px" alt="logo" />
+      </a>
+    </h1>
+    <div
+      id="dashboard"
+      style="display: none; justify-content: center; gap: 20px"
+    >
+      <div style="width: 260px">
+        <div class="container">
+          <input type="file" id="csvFileInput" accept=".csv" />
+          <label>Задержка перед лайком (сек.)</label>
+          <input
+            type="number"
+            id="delayLike"
+            placeholder="Задержка перед лайком (сек.)"
+          />
+          <label>Задержка перед подпиской (сек.)</label>
+          <input
+            type="number"
+            id="delayFollow"
+            placeholder="Задержка перед подпиской (сек.)"
+          />
+          <label>Задержка перед следующим юзером (сек.)</label>
+          <input
+            type="number"
+            id="delayNext"
+            placeholder="Задержка перед следующим юзером (сек.)"
+          />
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 20px;
+            "
+          >
+            <button id="clearDb" style="background-color: red">
+              Очистить БД
+            </button>
+            <button id="saveButton" style="width: 100px">Сохранить</button>
+          </div>
+        </div>
+      </div>
+      <div style="width: 240px">
+        <div class="container">
+          <div
+            style="
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              gap: 10px;
+              margin-bottom: 10px;
+            "
+          >
+            <div>
+
+              <div class="checkbox-wrapper-2">
+                <input type="checkbox" id="activeLike" class="sc-gJwTLC ikxBAC">
+              </div>
+
+              <label for="activeLike">Лайкать</label>
+            </div>
+            <div>
+              <div class="checkbox-wrapper-2">
+                <input type="checkbox" id="activeFollow" class="sc-gJwTLC ikxBAC">
+              </div>
+              <label for="activeFollow">Подписываться</label>
+            </div>
+          </div>
+          <button id="startTask">Запустить задачу</button>
+          <h3 style="margin: 0; text-align: center">
+            Действия доступны для
+            <span style="color: #4caf50" id="actionList">0</span>
+          </h3>
+        </div>
+        <div class="container" style="gap: 0">
+          <h1 style="margin: 0; margin-bottom: 10px; text-align: center">
+            АНАЛИТИКА
+          </h1>
+          <h2>
+            Доступно ссылок:
+            <span style="color: #00ffde" id="totalLinks">0</span>
+          </h2>
+          <h2>
+            Лайкнуто:
+            <span style="color: #008cff" id="totalLiked">0</span>
+          </h2>
+          <h2>
+            Фолловнуто:
+            <span style="color: #00ff62" id="totalFollowed">0</span>
+          </h2>
+        </div>
+        <div class="container">
+          <a href="https://t.me/" target="_blank" class="button">
+            Телеграм канал
+          </a>
+          <button id="openModal" style="background-color: #6e79d6;">Донат</button>
+        </div>
+      </div>
+      <div style="width: 283px">
+        <div class="container">
+          <input
+            type="text"
+            id="photoURL"
+            style="background-color: #444444"
+            placeholder="Ссылка на фото..."
+          />
+          <button id="collectUsers">Собрать юзеров</button>
+
+          <h2>Обычных юзеров: <span id="normalUsers">0</span></h2>
+
+          <button id="exportNormal" style="background-color: #575757">
+            Add to List
+          </button>
+          <h2>VIP юзеров: <span id="vipUsers">0</span></h2>
+
+          <button id="exportVIP" style="background-color: #575757">
+            Добавить в список
+          </button>
+
+          <h2>USA юзеров: <span id="usaUsers">0</span></h2>
+
+          <button id="exportUSA" style="background-color: #575757">
+            Добавить в список
+          </button>
+
+          <button id="exportDelete" style="background-color: rgb(182, 9, 9)">
+            Удалить всех
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
